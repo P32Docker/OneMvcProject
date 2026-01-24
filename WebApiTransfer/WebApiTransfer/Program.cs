@@ -58,8 +58,8 @@ builder.Services.AddCors(options =>
 	options.AddPolicy("AllowAll", policy =>
 	{
 		policy.SetIsOriginAllowed(origin => true) 
-			  .AllowAnyHeader()
 			  .AllowAnyMethod()
+			  .AllowAnyHeader()
 			  .AllowCredentials(); 
 	});
 });
@@ -164,7 +164,7 @@ var app = builder.Build();
 //		Console.WriteLine($"Failed to send startup emails: {ex.Message}");
 //	}
 //});
-app.UseCors("AllowTwoDomains");
+app.UseCors("AllowAll");
 await DbSeeder.SeedData(app.Services);
 var dirName = builder.Configuration.GetValue<string>("DirImageName") ?? "images";
 var dirPath = Path.Combine(app.Environment.ContentRootPath, dirName);
