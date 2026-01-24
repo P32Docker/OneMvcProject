@@ -55,10 +55,9 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowTwoDomains", policy =>
+	options.AddPolicy("AllowAll", policy =>
 	{
-		policy.WithOrigins("http://localhost:5173", "http://localhost:5174",
-			"http://transfersitereactts.somee.com")
+		policy.SetIsOriginAllowed(origin => true) 
 			  .AllowAnyHeader()
 			  .AllowAnyMethod()
 			  .AllowCredentials(); 
