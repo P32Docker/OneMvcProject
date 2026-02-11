@@ -98,7 +98,6 @@ builder.Services.AddSwaggerGen(opt =>
 
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<ICountryService, CountryService>();
@@ -181,7 +180,11 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API"));
+app.UseSwaggerUI(c =>
+{
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API");
+	c.RoutePrefix = string.Empty;
+});
 
 app.Use(async (context, next) =>
 {

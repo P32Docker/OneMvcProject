@@ -1,0 +1,55 @@
+version: '3.8'
+networks:
+  transferNet:
+    driver: bridge
+services:
+  container-postgres:
+    image: postgres:18.1
+    container_name: container-postgres
+    restart: always
+    ports:
+      - "5028:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /data/transfer/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - transferNet
+
+  transfer-api:
+    image: maxslipchuk22/transfer-api:latest
+    container_name: transfer-api_container
+    ports:
+      - "5898:8080"
+    depends_on:
+      container-postgres:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=container-postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
+    volumes:
+      - /data/transfer/images:/app/images
+    networks:
+      - transferNet
+
+  my-front:
+    image: maxslipchuk22/transfer-react:latest
+    container_name: my-front_container
+    restart: always
+    ports:
+      - "3987:80"
+    depends_on:
+      - transfer-api
+    environment:
+      - API_URL=${API_URL} 
+    volumes:
+      - /data/transfer/images:/usr/share/nginx/html/images
+
+volumes:
+  postgres_data:
